@@ -8,7 +8,8 @@ public class FollowWand : MonoBehaviour
     GameObject wand;
     Vector3 wandPos;
     Vector3 targetPos;
-    float moveSpeed = 1f;
+    [SerializeField]
+    float moveSpeed;
 
    void Update(){
         wandPos = wand.transform.position;
@@ -16,7 +17,7 @@ public class FollowWand : MonoBehaviour
    }
 
    void FixedUpdate(){
-    transform.position = new Vector3(targetPos.x, 1.5f, targetPos.z);
+    transform.position = new Vector3(targetPos.x, GameManager.Instance.GetGroundHeight()+1, targetPos.z);
    }
 
 }

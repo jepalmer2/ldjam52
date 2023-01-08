@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,9 +11,19 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     GameObject goodApple, goldApple, badApple;
     [SerializeField]
-    int boardSizeX, boardSizeY, dropHeight, groundHeight, numPooledApples, timeBetweenDrops;
+    int boardSizeX, boardSizeY, dropHeight, groundHeight, numPooledApples, gameTimePerRoundInSeconds, warningCountdown;
+    int timeLeft, score;
+    [SerializeField]
+    float timeBetweenDrops;
     bool isGameRunning;
     List<GameObject> applePool, goldPool, badPool;
+
+    //UI shit
+    [SerializeField]
+    TMP_Text scoreText, warningText, warningCountdownText;
+    [SerializeField]
+    Image timerUI;
+    
 
     void Awake(){
         if(Instance != null && Instance != this){
@@ -20,8 +32,45 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
         isGameRunning = true;
+        scoreText.text = "";
+        timerUI.fillAmount = 0.0f;
     }
 
+
+    void StartGame(){
+        //isGameRunning = true;
+        score = 0;
+
+        //scoreText.text = score.ToString();
+        timeLeft = gameTimePerRoundInSeconds;
+        //timerUI.fillAmount = 1.0f;
+        //warningCountdown = 3;
+        StartCoroutine("Warning");
+    }
+
+    void StopGame(){
+        isGameRunning = false;
+        StopCoroutine("AppleSpawnTimer");
+        StopCoroutine("Timer");
+        timerUI.fillAmount = 0.0f;
+        foreach(GameObject g in applePool){
+            g.SetActive(false);
+        }
+        foreach(GameObject g in goldPool){
+            g.SetActive(false);
+        }
+        foreach(GameObject g in badPool){
+            g.SetActive(false);
+        }
+    }
+
+    public void AdjustScore(int i){
+        score += i;
+        if(score < 0){
+            score = 0;
+        }
+        scoreText.text = score.ToString();
+    }
 
     void Start(){
         //object pool of apples
@@ -43,8 +92,9 @@ public class GameManager : MonoBehaviour
             tmp.SetActive(false);
         }
 
-        StartCoroutine("AppleSpawnTimer");
+        StartGame();
     }
+
 
     GameObject GetPooledApple(){
         for (int i = 0; i < numPooledApples; i++){
@@ -76,20 +126,20 @@ public class GameManager : MonoBehaviour
 
     void SpawnApple(){
         int random = Mathf.RoundToInt(Random.Range(1, 20));
-        Debug.Log(random.ToString());
+        //Debug.Log(random.ToString());
         GameObject apple = null;
 
-        if(random >= 19){
+        if(random >= 15){
             //spawn gold apple
             apple = GetPooledGold();
         }
 
-        if(random <= 4){
+        if(random <= 5){
             //spawn bad apple
             apple = GetPooledBad();
         }
 
-        if(random > 4 && random < 19) {
+        if(random > 5 && random < 15) {
             //spawn good apple
             apple = GetPooledApple();
         }
@@ -108,6 +158,41 @@ public class GameManager : MonoBehaviour
             SpawnApple();
             yield return new WaitForSecondsRealtime(timeBetweenDrops);    
         }
+    }
+
+    IEnumerator Timer(){
+        while(isGameRunning){
+            float percent = (float)timeLeft/(float)gameTimePerRoundInSeconds;
+            timerUI.fillAmount = percent;
+
+            yield return new WaitForSecondsRealtime(1);
+
+            if(timeLeft < 1){
+                StopGame();
+            }
+
+            timeLeft--;
+        }
+    }
+
+    //lots of magic numbers below
+    //idgaf, it's gamejam code
+    IEnumerator Warning(){
+        warningText.text = "Get Ready!";
+        warningCountdownText.text = warningCountdown.ToString();
+        while(warningCountdown > 0){
+            warningCountdownText.text = warningCountdown.ToString();
+            yield return new WaitForSecondsRealtime(1.5f);
+            warningCountdown--;
+        }
+        warningText.text = "";
+        warningCountdownText.text = "";
+
+        isGameRunning = true;
+        scoreText.text = "0";
+
+        StartCoroutine("AppleSpawnTimer");
+        StartCoroutine("Timer");
     }
 
     public int GetDropHeight(){

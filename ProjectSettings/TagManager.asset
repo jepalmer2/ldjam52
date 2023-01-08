@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Wand
+  - Good
+  - Bad
+  - Gold
+  - Apple
   layers:
   - Default
   - TransparentFX

@@ -7,14 +7,12 @@ public class Apple : MonoBehaviour
     [SerializeField]
     int pointValue;
     [SerializeField]
-    float maxSpeed;
     float speed;
-
     float groundHeight;
 
     void Awake(){
         groundHeight = GameManager.Instance.GetGroundHeight();
-        speed = Random.Range(0.25f, maxSpeed) / 10;
+        //speed = Random.Range(0.25f, maxSpeed) / 10;
     }
 
     void FixedUpdate(){
@@ -23,7 +21,7 @@ public class Apple : MonoBehaviour
         //float percentJourney = (dropHeight - transform.position.y) / dropHeight;
         transform.Translate(new Vector3(
             0,
-            -speed,
+            -speed/10,
             //Mathf.Lerp(dropHeight, groundHeight, percentJourney * Time.fixedDeltaTime),
             0
         ));
@@ -32,6 +30,11 @@ public class Apple : MonoBehaviour
         if(transform.position.y <= groundHeight){
             gameObject.SetActive(false);
         }
+    }
+
+    public int GetValueAndCollect(){
+        gameObject.SetActive(false);
+        return pointValue;
     }
 
 }
