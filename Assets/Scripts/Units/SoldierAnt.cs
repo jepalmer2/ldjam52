@@ -1,3 +1,0 @@
-class SoldierAnt : Ant
-{
-}
