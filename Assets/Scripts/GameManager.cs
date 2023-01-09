@@ -93,13 +93,11 @@ public class GameManager : MonoBehaviour
         if(score < 0){
             score = 0;
         }
-        scoreText.text = score.ToString();
+        scoreText.text = "Score: " + score.ToString();
     }
 
     void Start(){
-        scoreText.text = "";
         timerUI.fillAmount = 0.0f;
-
         StartGame();
     }
 
@@ -194,20 +192,21 @@ public class GameManager : MonoBehaviour
     //lots of magic numbers below
     //idgaf, it's gamejam code
     IEnumerator Warning(){
-        scoreText.text = "";
         warningCountdown = 3;
         warningText.text = "Get Ready!";
         warningCountdownText.text = warningCountdown.ToString();
+        scoreText.text = "Score: " + score.ToString();
+
         while(warningCountdown > 0){
             warningCountdownText.text = warningCountdown.ToString();
             yield return new WaitForSecondsRealtime(1.5f);
             warningCountdown--;
         }
+        
         warningText.text = "";
         warningCountdownText.text = "";
 
         isGameRunning = true;
-        scoreText.text = "0";
 
         StartCoroutine("AppleSpawnTimer");
         StartCoroutine("Timer");
