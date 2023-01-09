@@ -31,53 +31,13 @@ public class GameManager : MonoBehaviour
         } else {
             Instance = this;
         }
-        isGameRunning = true;
-        scoreText.text = "";
-        timerUI.fillAmount = 0.0f;
-    }
 
-
-    void StartGame(){
-        //isGameRunning = true;
-        score = 0;
-
-        //scoreText.text = score.ToString();
-        timeLeft = gameTimePerRoundInSeconds;
-        //timerUI.fillAmount = 1.0f;
-        //warningCountdown = 3;
-        StartCoroutine("Warning");
-    }
-
-    void StopGame(){
-        isGameRunning = false;
-        StopCoroutine("AppleSpawnTimer");
-        StopCoroutine("Timer");
-        timerUI.fillAmount = 0.0f;
-        foreach(GameObject g in applePool){
-            g.SetActive(false);
-        }
-        foreach(GameObject g in goldPool){
-            g.SetActive(false);
-        }
-        foreach(GameObject g in badPool){
-            g.SetActive(false);
-        }
-    }
-
-    public void AdjustScore(int i){
-        score += i;
-        if(score < 0){
-            score = 0;
-        }
-        scoreText.text = score.ToString();
-    }
-
-    void Start(){
         //object pool of apples
         applePool = new List<GameObject>();
         badPool = new List<GameObject>();
         goldPool = new List<GameObject>();
         GameObject tmp;
+        
         for(int i = 0; i < numPooledApples; i++){
             tmp = Instantiate(goodApple);
             applePool.Add(tmp);
@@ -91,6 +51,49 @@ public class GameManager : MonoBehaviour
             goldPool.Add(tmp);
             tmp.SetActive(false);
         }
+
+    }
+
+
+    void StartGame(){
+        isGameRunning = true;
+        score = 0;
+        timeLeft = gameTimePerRoundInSeconds;
+        StartCoroutine("Warning");
+    }
+
+    void StopGame(){
+        isGameRunning = false;
+        StopCoroutine("AppleSpawnTimer");
+        StopCoroutine("Timer");
+        StopAllCoroutines();
+
+        timerUI.fillAmount = 0.0f;
+        foreach(GameObject g in applePool){
+            g.SetActive(false);
+        }
+        foreach(GameObject g in goldPool){
+            g.SetActive(false);
+        }
+        foreach(GameObject g in badPool){
+            g.SetActive(false);
+        }
+
+        scoreText.text = "You harvested " + score.ToString() + " apples!";
+        StartCoroutine("Cooldown");
+    }
+
+    public void AdjustScore(int i){
+        score += i;
+        if(score < 0){
+            score = 0;
+        }
+        scoreText.text = score.ToString();
+    }
+
+    void Start(){
+        scoreText.text = "";
+        timerUI.fillAmount = 0.0f;
 
         StartGame();
     }
@@ -178,6 +181,8 @@ public class GameManager : MonoBehaviour
     //lots of magic numbers below
     //idgaf, it's gamejam code
     IEnumerator Warning(){
+        scoreText.text = "";
+        warningCountdown = 3;
         warningText.text = "Get Ready!";
         warningCountdownText.text = warningCountdown.ToString();
         while(warningCountdown > 0){
@@ -193,6 +198,11 @@ public class GameManager : MonoBehaviour
 
         StartCoroutine("AppleSpawnTimer");
         StartCoroutine("Timer");
+    }
+
+    IEnumerator Cooldown(){
+        yield return new WaitForSecondsRealtime(10f);
+        StartGame();
     }
 
     public int GetDropHeight(){
