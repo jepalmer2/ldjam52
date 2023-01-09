@@ -17,7 +17,7 @@ public class FollowWand : MonoBehaviour
    }
 
    void FixedUpdate(){
-    transform.position = new Vector3(targetPos.x, GameManager.Instance.GetGroundHeight()+1, targetPos.z);
+    transform.position = new Vector3(targetPos.x, GameManager.Instance.GetGroundHeight()+3, targetPos.z);
    }
 
 }

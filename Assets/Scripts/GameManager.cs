@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
     TMP_Text scoreText, warningText, warningCountdownText;
     [SerializeField]
     Image timerUI;
+    AudioSource source;
+    [SerializeField]
+    AudioClip fuckTikTok, timesUpRinger;
     
 
     void Awake(){
@@ -51,6 +54,8 @@ public class GameManager : MonoBehaviour
             goldPool.Add(tmp);
             tmp.SetActive(false);
         }
+
+        source = GetComponent<AudioSource>();
 
     }
 
@@ -172,6 +177,14 @@ public class GameManager : MonoBehaviour
 
             if(timeLeft < 1){
                 StopGame();
+            }
+
+            if(timeLeft < 6 && timeLeft > 0){
+                source.PlayOneShot(fuckTikTok);
+            }
+
+            if(timeLeft <= 0){
+                source.PlayOneShot(timesUpRinger);
             }
 
             timeLeft--;
